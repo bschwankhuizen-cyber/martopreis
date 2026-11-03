@@ -3,6 +3,8 @@
   // Statische site (Astro) geserveerd via Cloudflare Workers Static Assets
   "name": "martopreis",
   "compatibility_date": "2026-10-01",
+  // wrangler deploy bouwt eerst de site, zodat er geen apart build command nodig is
+  "build": { "command": "npm run build" },
   "assets": {
     "directory": "./dist",
     "html_handling": "auto-trailing-slash",
