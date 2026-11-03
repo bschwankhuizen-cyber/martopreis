@@ -1,0 +1,49 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { photo } from '~/lib/photos';
+type F = { src: string; caption?: string; alt?: string };
+interface Props {
+  fotos: F[];
+  /** kolommen op desktop; standaard automatisch */
+  kolommen?: 2 | 3 | 4;
+  titel?: string;
+}
+const { fotos, kolommen, titel } = Astro.props;
+const cols = kolommen ?? (fotos.length === 1 ? 1 : fotos.length === 2 || fotos.length === 4 ? 2 : 3);
+const items = await Promise.all(
+  fotos.map(async (f) => {
+    const img = photo(f.src);
+    const full = await getImage({ src: img, width: Math.min(1800, img.width), format: 'webp', quality: 80 });
+    return { ...f, img, full: full.src, alt: f.alt ?? f.caption ?? f.src.replace(/[-_]/g, ' ').replace(/\.\w+$/, '') };
+  }),
+);
+---
+
+<figure class="gal wide" style={`--cols:${cols}`}>
+  {titel && <h3 class="gal__title">{titel}</h3>}
+  <ul>
+    {
+      items.map((f) => (
+        <li>
+          <a href={f.full} data-lightbox data-caption={f.caption ?? ''}>
+            <Image src={f.img} alt={f.alt} widths={[400, 700, 1000].filter((w) => w <= f.img.width)} sizes={`(min-width: 1080px) ${Math.round(1040 / cols)}px, ${cols > 2 ? 50 : 100}vw`} format="webp" quality={75} loading="lazy" />
+          </a>
+          {f.caption && <span class="gal__cap">{f.caption}</span>}
+        </li>
+      ))
+    }
+  </ul>
+</figure>
+
+<style>
+  .gal { margin: 2.2em auto; }
+  .gal__title { margin-bottom: 14px; }
+  .gal ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(var(--cols), 1fr); }
+  .gal li { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .gal a { display: block; overflow: hidden; border-radius: var(--radius); background: var(--paper-2); aspect-ratio: 3 / 2; cursor: zoom-in; }
+  .gal img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .gal a:hover img { transform: scale(1.04); }
+  .gal__cap { font-size: 0.86rem; line-height: 1.45; color: var(--ink-3); }
+  @media (max-width: 700px) { .gal ul { grid-template-columns: repeat(min(var(--cols), 2), 1fr); } }
+  @media (max-width: 440px) { .gal ul { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,58 @@
+---
+import { Image } from 'astro:assets';
+import Simple from '~/layouts/Simple.astro';
+import { photo } from '~/lib/photos';
+import { SITE } from '~/data/site';
+const img = photo('camping-val-de-cantobre-cevennen.jpg');
+const schema = [{
+  '@type': 'AboutPage', '@id': `${SITE.url}/over-mart#about`, url: `${SITE.url}/over-mart`, name: 'Over Mart', inLanguage: 'nl-NL',
+  mainEntity: { '@id': `${SITE.url}/#mart` },
+}];
+---
+
+<Simple title="Over Mart" seoTitle="Over Mart – wie schrijft Mart op Reis?" description="Maak kennis met Mart, de reiziger achter Mart op Reis. Waarom ik deze reisblog schrijf, hoe ik werk en hoe ik eerlijk blijf over campings, hotels en affiliate links." eyebrow="Wie ben ik?" intro="Ik ben Mart. Ik reis graag met het gezin en neem je op deze site mee naar de plekken die ik zelf heb bezocht." image="camping-val-de-cantobre-cevennen.jpg" schema={schema}>
+  <section class="section">
+    <div class="wrap about">
+      <div class="prose about__txt">
+        <h2>Ik neem je mee!</h2>
+        <p>Op Mart op Reis laat ik zien wat ik heb gezien en wat ik heb gedaan tijdens mijn vakanties. Geen glossy reisbrochure, maar echte ervaringen: van een augustusdag in het middeleeuwse <a href="/frankrijk/dordogne/monpazier">Monpazier</a> tot een middag zwemmen en kanoën in de rivier bij <a href="/frankrijk/cevennen/camping-val-de-cantobre">Camping Val de Cantobre</a>.</p>
+        <p>De meeste foto's op deze site heb ik zelf gemaakt, vaak gewoon met mijn smartphone. Zo zie je precies hoe een plek er in het echt uitziet.</p>
+
+        <h2>Hoe ik werk</h2>
+        <ul>
+          <li><strong>Zelf bezocht of zelf getest.</strong> Mijn reisverslagen gaan over plekken waar ik zelf ben geweest; reviews over spullen die ik zelf heb gekocht en gebruikt.</li>
+          <li><strong>Eerlijk over plus- én minpunten.</strong> Is iets tegenvallend, dan schrijf ik dat ook op.</li>
+          <li><strong>Overzichten op basis van onderzoek.</strong> In vergelijkingen van campings en hotels combineer ik mijn eigen ervaring met gastbeoordelingen, faciliteiten en prijzen bij de grote aanbieders. Dat vermeld ik er duidelijk bij.</li>
+          <li><strong>Transparant over affiliate links.</strong> Boek je via een link op deze site, dan ontvang ik soms een kleine vergoeding. Jij betaalt niets extra. Lees meer in de <a href="/disclaimer">disclaimer</a>.</li>
+          <li><strong>Regelmatig bijgewerkt.</strong> Bij elk artikel zie je wanneer het voor het laatst is gecontroleerd.</li>
+        </ul>
+
+        <h2>Waar ik ben geweest</h2>
+        <p>Mijn hart ligt in Frankrijk, met de <a href="/frankrijk/dordogne">Dordogne</a> en de <a href="/frankrijk/cevennen">Cevennen</a> als favorieten. Daarnaast schrijf ik over <a href="/duitsland">halfpension-hotels in Duitsland</a>, een <a href="/thailand/familie-groepsreis">familiereis naar Thailand</a>, <a href="/wintersport/ski-huren">wintersport</a> en test ik spullen zoals een <a href="/reviews/leawin-t4-elektrische-step">elektrische step</a>.</p>
+      </div>
+      <aside class="about__side">
+        <Image src={img} alt="Camping Val de Cantobre in de Cevennen" widths={[400, 700].filter((w) => w <= img.width)} sizes="380px" format="webp" quality={74} />
+        <div class="about__card">
+          <p class="about__t">Mart op Reis in het kort</p>
+          <ul>
+            <li>📍 Reisblog uit Nederland</li>
+            <li>🏕️ Specialisme: Frankrijk &amp; kamperen met het gezin</li>
+            <li>📷 Eigen foto's</li>
+            <li>✍️ Sinds 2023 online</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Simple>
+
+<style>
+  .about { display: grid; grid-template-columns: 1fr 360px; gap: 56px; align-items: start; }
+  .about__txt > * { margin-left: 0 !important; }
+  .about__side { position: sticky; top: 100px; display: grid; gap: 16px; }
+  .about__side img { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .about__card { background: var(--sun-2); border-radius: var(--radius-lg); padding: 20px 22px; }
+  .about__t { font-weight: 750; margin: 0 0 8px; }
+  .about__card ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  @media (max-width: 900px) { .about { grid-template-columns: 1fr; } .about__side { position: static; } }
+</style>

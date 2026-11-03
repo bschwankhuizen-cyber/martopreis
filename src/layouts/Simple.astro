@@ -1,0 +1,28 @@
+---
+/** Eenvoudige paginakop voor overzichts- en infopagina's */
+import Base from './Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { breadcrumbLd } from '~/lib/schema';
+interface Props { title: string; seoTitle?: string; description: string; eyebrow?: string; intro?: string; image?: string; schema?: Record<string, unknown>[]; noindex?: boolean }
+const { title, seoTitle, description, eyebrow, intro, image, schema = [], noindex } = Astro.props;
+const crumbs = [{ name: 'Home', href: '/' }];
+---
+
+<Base title={seoTitle ?? title} description={description} image={image} noindex={noindex} schema={[...schema, breadcrumbLd(crumbs, title, Astro.url.pathname)]}>
+  <header class="phead">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} current={title} />
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h1>{title}</h1>
+      {intro && <p class="phead__intro">{intro}</p>}
+    </div>
+  </header>
+  <slot />
+</Base>
+
+<style>
+  .phead { padding: 40px 0 36px; background: radial-gradient(circle at 92% 10%, var(--sun-2), transparent 40%), var(--paper); border-bottom: 1px solid var(--line); }
+  .phead :global(.bc) { color: var(--ink-3); margin-bottom: 22px; }
+  .phead h1 { margin: 12px 0 10px; }
+  .phead__intro { font-size: 1.2rem; color: var(--ink-2); max-width: 62ch; margin: 0; }
+</style>

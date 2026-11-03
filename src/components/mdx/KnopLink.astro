@@ -1,0 +1,17 @@
+---
+interface Props { href: string; variant?: 'sun' | 'dark' | 'ghost'; partner?: boolean }
+const { href, variant = 'sun', partner } = Astro.props;
+const ext = /^https?:/.test(href);
+const isPartner = partner ?? ext;
+---
+
+<p class="knop">
+  <a href={href} class:list={['btn', { 'btn--sun': variant === 'sun', 'btn--ghost': variant === 'ghost' }]} {...ext ? { target: '_blank', rel: isPartner ? 'sponsored nofollow noopener' : 'noopener' } : {}}>
+    <slot />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+  </a>
+</p>
+
+<style>
+  .knop { margin: 1.4em auto; }
+</style>

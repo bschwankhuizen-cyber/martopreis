@@ -1,0 +1,180 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Card from '~/components/Card.astro';
+import { photo } from '~/lib/photos';
+import { alleArtikelen, url, datum } from '~/lib/content';
+import { REGIONS, SITE, TYPE_LABEL } from '~/data/site';
+
+const all = await alleArtikelen();
+const verslagen = all.filter((a) => a.data.type === 'reisverslag' || a.data.type === 'bezienswaardigheid').sort((a, b) => a.data.order - b.data.order);
+const reportages = (await getCollection('fotoreportages')).sort((a, b) => +b.data.date - +a.data.date);
+const verblijf = all.filter((a) => ['accommodaties', 'camping'].includes(a.data.type)).sort((a, b) => a.data.order - b.data.order).slice(0, 6);
+const gidsen = all.filter((a) => ['gids', 'review'].includes(a.data.type));
+const regions = REGIONS.filter((r) => r.id !== 'frankrijk' && r.id !== 'reviews');
+const hero = photo('dordogne-rivier-panorama-ef.jpg');
+const intro = photo('camping-val-de-cantobre-cevennen.jpg');
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': `${SITE.url}/#home`,
+    url: SITE.url,
+    name: `${SITE.name} – ${SITE.tagline}`,
+    description: SITE.description,
+    inLanguage: 'nl-NL',
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    about: regions.map((r) => ({ '@type': 'Place', name: r.name })),
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: verslagen.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(url(a.id), SITE.url).href, name: a.data.title })),
+    },
+  },
+];
+---
+
+<Base title={`${SITE.name} – Reisverslagen, fotoreportages & reistips`} description={SITE.description} image="dordogne-rivier-panorama-ef.jpg" imageAlt="Panorama over de rivier de Dordogne" schema={schema}>
+  <section class="hero">
+    <Image src={hero} alt="Panorama over de rivier de Dordogne in de zomer" widths={[800, 1280, 1920, 2300]} sizes="100vw" format="webp" quality={78} loading="eager" fetchpriority="high" class="hero__img" />
+    <div class="hero__shade"></div>
+    <div class="wrap hero__in">
+      <span class="eyebrow hero__eyebrow">Persoonlijke reisblog</span>
+      <h1>Ik neem je mee!</h1>
+      <p>Ontdek wat ik heb gezien en zie wat ik heb gedaan. Eerlijke reisverslagen, fotoreportages en tips – van de Dordogne tot Thailand.</p>
+      <div class="hero__cta">
+        <a href="/reisverslagen" class="btn btn--sun">Lees mijn reisverslagen</a>
+        <a href="/bestemmingen" class="btn hero__ghost">Alle bestemmingen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap intro">
+      <div class="intro__txt">
+        <span class="eyebrow">Welkom</span>
+        <h2>Op reis met Mart</h2>
+        <p>Hallo en welkom op mijn website, waar je kunt zien wat ik heb gezien tijdens mijn vakanties. Zo neem ik je mee naar de Dordogne, waar ik alle belangrijke bezienswaardigheden heb bezocht: historische dorpjes, <a href="/frankrijk/dordogne/chateau-des-milandes">kastelen</a>, markten en stranden.</p>
+        <p>Ook laat ik je mooie <a href="/frankrijk/dordogne/campings">campings</a> zien en wijs ik je de weg bij het boeken van jouw vakantie. Alles wat je hier leest heb ik zelf bezocht, gefotografeerd of getest.</p>
+        <ul class="intro__facts">
+          <li><strong>{verslagen.length}</strong> reisverslagen</li>
+          <li><strong>{reportages.reduce((n, r) => n + r.data.photos.length, 0)}+</strong> eigen foto's</li>
+          <li><strong>40+</strong> campings vergeleken</li>
+        </ul>
+        <a href="/over-mart" class="btn btn--ghost">Meer over mij</a>
+      </div>
+      <div class="intro__img">
+        <Image src={intro} alt="Camping Val de Cantobre in de Cevennen" widths={[500, 800, 1100].filter((w) => w <= intro.width)} sizes="(min-width: 900px) 560px, 100vw" format="webp" quality={76} loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  {verslagen.length > 0 && (
+    <section class="section section--tint">
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow">Reisverslagen</span><h2>Parels die ik zelf bezocht</h2><p>Mijn persoonlijke verhalen met tips, praktische info en heel veel foto's.</p></div>
+          <a href="/reisverslagen" class="btn btn--ghost">Alle reisverslagen</a>
+        </div>
+        <div class="feat">
+          {verslagen.slice(0, 3).map((a, i) => (
+            <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={a.data.visited ? `Bezocht ${a.data.visited}` : TYPE_LABEL[a.data.type]} size={i === 0 ? 'large' : 'normal'} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {reportages.length > 0 && (
+    <section class="section reps">
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow eyebrow--light">Fotoreportages</span><h2>Kijken, kijken, kijken</h2><p>Laat de foto's het verhaal vertellen. Klik een reportage open en blader door alle beelden.</p></div>
+          <a href="/fotoreportages" class="btn btn--sun">Alle fotoreportages</a>
+        </div>
+        <div class="reps__row">
+          {reportages.map((r) => {
+            const img = photo(r.data.cover);
+            return (
+              <a href={`/fotoreportages/${r.id}`} class="reps__item">
+                <Image src={img} alt={r.data.coverAlt} widths={[400, 700].filter((w) => w <= img.width)} sizes="320px" format="webp" quality={72} loading="lazy" />
+                <span><strong>{r.data.title}</strong><small>{r.data.photos.length} foto's · {r.data.location}</small></span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div><span class="eyebrow">Bestemmingen</span><h2>Waar wil jij naartoe?</h2></div>
+        <a href="/bestemmingen" class="btn btn--ghost">Bekijk alles</a>
+      </div>
+      <div class="grid grid--3">
+        {regions.map((r) => <Card href={r.href} title={r.name} text={r.blurb} image={r.image} label={r.country} />)}
+      </div>
+    </div>
+  </section>
+
+  {verblijf.length > 0 && (
+    <section class="section section--tint">
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow">Overnachten</span><h2>Campings &amp; hotels die ik aanraad</h2><p>Vergelijkingen met beoordelingen, prijzen en eerlijke tips.</p></div>
+        </div>
+        <div class="grid grid--3">
+          {verblijf.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {gidsen.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div><span class="eyebrow">Gidsen &amp; reviews</span><h2>Slim op reis</h2><p>Vanuit mijn eigen ervaring geef ik informatie en tips voor zomervakantie en wintersport, en test ik spullen voor onderweg.</p></div>
+        </div>
+        <div class="grid grid--3">
+          {gidsen.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} meta={`Bijgewerkt ${datum(a.data.updated ?? a.data.published)}`} />)}
+        </div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .hero { position: relative; min-height: min(88vh, 760px); display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: #2b3a3a; }
+  .hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero__shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.1) 70%), linear-gradient(0deg, rgb(0 0 0 / 0.45), transparent 50%); }
+  .hero__in { position: relative; padding: 140px 0 72px; }
+  .hero h1 { color: #fff; font-size: clamp(3rem, 9vw, 6.5rem); margin: 16px 0 12px; line-height: 0.95; }
+  .hero p { font-size: clamp(1.1rem, 2vw, 1.4rem); max-width: 40ch; color: #f2f2f2; }
+  .hero__eyebrow { color: #fff; }
+  .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  .hero__ghost { background: rgb(255 255 255 / 0.14); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.7); backdrop-filter: blur(6px); }
+  .intro { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: center; }
+  .intro__txt h2 { margin-top: 8px; }
+  .intro__txt p { color: var(--ink-2); font-size: 1.1rem; }
+  .intro__img img { width: 100%; border-radius: var(--radius-lg); aspect-ratio: 4/3.4; object-fit: cover; box-shadow: var(--shadow); transform: rotate(1.2deg); }
+  .intro__facts { list-style: none; padding: 0; margin: 24px 0 28px; display: flex; gap: 28px; flex-wrap: wrap; }
+  .intro__facts li { display: grid; font-size: 0.9rem; color: var(--ink-3); }
+  .intro__facts strong { font: 650 2rem/1.1 var(--serif); color: var(--ink); }
+  .feat { display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: auto auto; gap: 24px; }
+  .feat > :global(:first-child) { grid-row: span 2; }
+  .reps { background: var(--ink); color: #fff; }
+  .reps h2 { color: #fff; }
+  .reps .section-head p { color: #c5cace; }
+  .eyebrow--light { color: #fff; }
+  .reps__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 1fr); gap: 18px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x mandatory; }
+  .reps__item { position: relative; display: block; border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 3/4; scroll-snap-align: start; color: #fff; text-decoration: none; }
+  .reps__item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+  .reps__item:hover img { transform: scale(1.05); }
+  .reps__item span { position: absolute; inset: auto 0 0 0; padding: 60px 18px 18px; background: linear-gradient(transparent, rgb(0 0 0 / 0.75)); display: grid; gap: 2px; }
+  .reps__item strong { font: 600 1.3rem/1.2 var(--serif); }
+  .reps__item small { color: #ddd; }
+  @media (max-width: 900px) { .intro, .feat { grid-template-columns: 1fr; } .feat > :global(:first-child) { grid-row: auto; } .intro__img { order: -1; } }
+</style>

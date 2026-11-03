@@ -1,0 +1,196 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from './Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import Card from '~/components/Card.astro';
+import { photo } from '~/lib/photos';
+import { alleArtikelen, kruimels, kinderen, url, datum, type Artikel } from '~/lib/content';
+import { artikelLd } from '~/lib/schema';
+import { SITE, TYPE_LABEL, REGIONS } from '~/data/site';
+import { getCollection } from 'astro:content';
+
+interface Props { entry: Artikel; headings: { depth: number; slug: string; text: string }[] }
+const { entry, headings } = Astro.props;
+const d = entry.data;
+const all = await alleArtikelen();
+const crumbs = kruimels(all, entry.id);
+const hero = photo(d.hero);
+const heroOg = await getImage({ src: hero, width: 1600, format: 'jpg', quality: 80 });
+const schema = artikelLd(entry, new URL(heroOg.src, SITE.url).href, crumbs);
+const toc = headings.filter((h) => h.depth === 2);
+const subs = d.type === 'bestemming' ? kinderen(all, entry.id).filter((a) => a.id !== entry.id) : [];
+const subHubs = subs.filter((s) => s.data.type === 'bestemming');
+const subPages = subs.filter((s) => s.data.type !== 'bestemming');
+const regionPages = d.type === 'bestemming' ? all.filter((a) => a.data.region === d.region && !a.id.startsWith(entry.id + '/') && a.id !== entry.id && a.data.type !== 'bestemming') : [];
+
+// Gerelateerd: eerst expliciet, anders zelfde regio
+let related = (d.related ?? []).map((id) => all.find((a) => a.id === id)).filter(Boolean) as Artikel[];
+if (related.length < 3 && d.type !== 'bestemming') {
+  const parent = entry.id.split('/').slice(0, -1).join('/');
+  const extra = all.filter((a) => a.id !== entry.id && !related.includes(a) && (a.data.region === d.region || (parent && a.id.startsWith(parent + '/'))) && a.data.type !== 'bestemming');
+  related = [...related, ...extra].slice(0, 3);
+}
+const reportages = (await getCollection('fotoreportages')).filter((r) => r.data.article === entry.id);
+const region = REGIONS.find((r) => r.id === d.region);
+---
+
+<Base title={d.seoTitle ?? d.title} description={d.description} image={d.hero} imageAlt={d.heroAlt} type="article" published={d.published} updated={d.updated} schema={schema}>
+  <header class="hero">
+    <Image src={hero} alt={d.heroAlt} widths={[640, 1000, 1400, 1920, 2400].filter((w) => w <= hero.width)} sizes="100vw" format="webp" quality={76} loading="eager" fetchpriority="high" class="hero__img" />
+    <div class="hero__shade"></div>
+    <div class="wrap hero__in">
+      <Breadcrumbs items={crumbs} current={d.title} />
+      <span class="eyebrow eyebrow--light">{d.kicker ?? TYPE_LABEL[d.type]}</span>
+      <h1>{d.title}</h1>
+      {d.subtitle && <p class="hero__sub">{d.subtitle}</p>}
+    </div>
+  </header>
+
+  <div class="meta wrap">
+    <div class="meta__by">
+      <img src="/icon-192.png" alt="" width="40" height="40" />
+      <span>Door <a href="/over-mart" rel="author">{SITE.author.name}</a></span>
+    </div>
+    {d.visited && <span>🧭 Bezocht in {d.visited}</span>}
+    <span>📅 <time datetime={(d.updated ?? d.published).toISOString()}>{d.updated ? 'Bijgewerkt' : 'Gepubliceerd'} {datum(d.updated ?? d.published)}</time></span>
+    {d.camera && <span>📷 {d.camera}</span>}
+  </div>
+
+  {d.affiliate && (
+    <p class="disclosure measure">Deze pagina bevat affiliate links: boek je via een link, dan ontvang ik een kleine vergoeding. Jij betaalt niets extra en mijn mening blijft eerlijk. <a href="/disclaimer">Meer info</a></p>
+  )}
+
+  <div class="body">
+    {(d.tldr || toc.length > 2) && (
+      <div class="intro-boxes measure">
+        {d.tldr && (
+          <section class="tldr" aria-label="In het kort">
+            <p class="tldr__t">In het kort</p>
+            <ul>{d.tldr.map((t) => <li set:html={t} />)}</ul>
+          </section>
+        )}
+        {toc.length > 2 && (
+          <details class="toc" open={toc.length < 9}>
+            <summary>Inhoud van dit artikel</summary>
+            <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+          </details>
+        )}
+      </div>
+    )}
+
+    <article class="prose">
+      <slot />
+    </article>
+
+    {reportages.length > 0 && (
+      <section class="measure rep-cta">
+        {reportages.map((r) => (
+          <a href={`/fotoreportages/${r.id}`} class="rep-cta__a">
+            <span class="eyebrow">Fotoreportage</span>
+            <strong>{r.data.title}</strong>
+            <span>Bekijk alle {r.data.photos.length} foto's →</span>
+          </a>
+        ))}
+      </section>
+    )}
+
+    {d.faq && d.faq.length > 0 && (
+      <section class="faq measure" aria-labelledby="faq">
+        <h2 id="faq">Veelgestelde vragen</h2>
+        {d.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p set:html={f.a} />
+          </details>
+        ))}
+      </section>
+    )}
+
+    <aside class="author measure" aria-label="Over de auteur">
+      <img src="/icon-192.png" alt="Logo Mart op Reis" width="72" height="72" loading="lazy" />
+      <div>
+        <p class="author__t">Geschreven door Mart</p>
+        <p>Ik reis het liefst met het gezin, met de camera (meestal gewoon mijn smartphone) altijd binnen handbereik. Alles op deze site heb ik zelf bezocht of getest. <a href="/over-mart">Meer over mij</a></p>
+      </div>
+    </aside>
+  </div>
+
+  {subHubs.length > 0 && (
+    <section class="section section--tint">
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">Regio's</span><h2>Ontdek {d.title}</h2></div></div>
+        <div class="grid grid--3">{subHubs.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label="Regio" />)}</div>
+      </div>
+    </section>
+  )}
+
+  {subPages.length > 0 && (
+    <section class:list={['section', { 'section--tint': subHubs.length === 0 }]}>
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">Alles over {d.title}</span><h2>Verhalen, campings en tips</h2></div></div>
+        <div class="grid grid--3">{subPages.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} />)}</div>
+      </div>
+    </section>
+  )}
+
+  {regionPages.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">Meer {d.title}</span><h2>Ook interessant</h2></div></div>
+        <div class="grid grid--3">{regionPages.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} />)}</div>
+      </div>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <section class="section section--tint">
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">Lees verder</span><h2>{region ? `Meer uit ${region.name}` : 'Meer verhalen'}</h2></div></div>
+        <div class="grid grid--3">{related.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} />)}</div>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .hero { position: relative; min-height: min(78vh, 680px); display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: #222; }
+  .hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, rgb(0 0 0 / 0) 35%, rgb(0 0 0 / 0.65) 100%); }
+  .hero__in { position: relative; padding: 120px 0 48px; }
+  .hero h1 { color: #fff; max-width: 22ch; margin: 14px 0 10px; text-shadow: 0 2px 30px rgb(0 0 0 / 0.3); }
+  .hero__sub { font-size: clamp(1.1rem, 2vw, 1.35rem); max-width: 52ch; margin: 0; color: #f1f1f1; }
+  .hero :global(.bc) { color: #f3f3f3; margin-bottom: 18px; }
+  .eyebrow--light { color: #fff; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); font-size: 0.92rem; color: var(--ink-2); }
+  .meta__by { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); }
+  .meta__by img { border-radius: 50%; background: var(--sun-2); }
+  .disclosure { font-size: 0.85rem; color: var(--ink-3); margin-top: 18px; margin-bottom: 0; }
+  .body { padding: 36px 0 72px; }
+  .intro-boxes { display: grid; gap: 16px; margin-bottom: 36px; }
+  .tldr { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 24px; box-shadow: var(--shadow); }
+  .tldr__t, .toc summary { font: 700 0.78rem/1 var(--sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra); margin: 0 0 10px; }
+  .tldr ul { margin: 0; padding-left: 1.2em; }
+  .tldr li { margin: 0.35em 0; }
+  .toc { border-radius: var(--radius-lg); background: var(--paper-2); padding: 18px 24px; }
+  .toc summary { cursor: pointer; margin: 0; }
+  .toc ol { margin: 12px 0 0; padding-left: 1.3em; columns: 2 220px; column-gap: 32px; }
+  .toc li { margin: 0.3em 0; break-inside: avoid; }
+  .toc a { text-decoration: none; color: var(--ink); }
+  .toc a:hover { text-decoration: underline; }
+  .rep-cta { margin-top: 48px; display: grid; gap: 12px; }
+  .rep-cta__a { display: grid; gap: 4px; padding: 22px 24px; border-radius: var(--radius-lg); background: var(--ink); color: #fff; text-decoration: none; }
+  .rep-cta__a:hover { background: var(--teal); color: #fff; }
+  .rep-cta__a .eyebrow { color: #fff; }
+  .rep-cta__a strong { font: 600 1.4rem/1.2 var(--serif); }
+  .faq { margin-top: 56px; }
+  .faq details { border-bottom: 1px solid var(--line); padding: 4px 0; }
+  .faq summary { cursor: pointer; padding: 14px 32px 14px 0; font-weight: 650; position: relative; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; position: absolute; right: 4px; top: 8px; font-size: 1.5rem; color: var(--terra); }
+  .faq details[open] summary::after { content: '–'; }
+  .faq details p { margin: 0 0 16px; color: var(--ink-2); }
+  .author { margin-top: 56px; display: flex; gap: 18px; align-items: flex-start; padding: 22px; border-radius: var(--radius-lg); background: var(--sun-2); }
+  .author img { border-radius: 50%; background: #fff; flex: none; }
+  .author p { margin: 0; font-size: 0.97rem; }
+  .author__t { font-weight: 750; margin-bottom: 4px !important; }
+</style>

@@ -1,0 +1,33 @@
+---
+type A = { naam: string; href: string; info?: string };
+interface Props { titel?: string; items: A[] }
+const { titel = 'Vergelijk en boek', items } = Astro.props;
+---
+
+<div class="aanb">
+  <p class="aanb__t">{titel}</p>
+  <ul>
+    {
+      items.map((a) => (
+        <li>
+          <a href={a.href} target="_blank" rel="sponsored nofollow noopener">
+            <strong>{a.naam}</strong>
+            {a.info && <span>{a.info}</span>}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .aanb { margin: 1.8em auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow); }
+  .aanb__t { font: 700 0.78rem/1 var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin: 4px 6px 12px; }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  li { margin: 0; }
+  a { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--paper); text-decoration: none; color: var(--ink); border: 1px solid transparent; }
+  a:hover { border-color: var(--sun); background: var(--sun-2); color: var(--ink); }
+  a span { color: var(--ink-3); font-size: 0.88rem; }
+  a svg { width: 18px; height: 18px; margin-left: auto; flex: none; }
+</style>

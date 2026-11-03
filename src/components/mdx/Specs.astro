@@ -1,0 +1,20 @@
+---
+interface Props { rows: [string, string][]; titel?: string }
+const { rows, titel } = Astro.props;
+---
+
+<div class="specs">
+  {titel && <p class="specs__t">{titel}</p>}
+  <table>
+    <tbody>{rows.map(([k, v]) => <tr><th scope="row">{k}</th><td>{v}</td></tr>)}</tbody>
+  </table>
+</div>
+
+<style>
+  .specs { margin: 1.8em auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .specs__t { margin: 0; padding: 14px 16px; font-weight: 750; background: var(--paper-2); }
+  table { width: 100%; border-collapse: collapse; display: table !important; }
+  th, td { padding: 10px 16px !important; border-bottom: 1px solid var(--line); text-align: left; font-size: 0.97rem; }
+  th { width: 42%; background: transparent !important; color: var(--ink-2); font-weight: 600 !important; }
+  tr:last-child th, tr:last-child td { border-bottom: 0; }
+</style>

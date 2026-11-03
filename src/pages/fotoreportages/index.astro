@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Simple from '~/layouts/Simple.astro';
+import { photo } from '~/lib/photos';
+const reps = (await getCollection('fotoreportages')).sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<Simple title="Fotoreportages" seoTitle="Fotoreportages – reisfoto's van Mart" description="Bekijk de fotoreportages van Mart: honderden eigen reisfoto's uit Monpazier, Sarlat, Château des Milandes, de Dordogne-rivier en de Cevennen." eyebrow="Laat de foto's spreken" intro="Een foto zegt meer dan duizend woorden. In deze reportages blader je door al mijn foto's van een plek – allemaal zelf gemaakt." image="panorama-kasteel-chateau-des-milandes-ef.jpg">
+  <section class="section">
+    <div class="wrap grid grid--3">
+      {reps.map((r) => {
+        const img = photo(r.data.cover);
+        const strip = r.data.photos.slice(0, 3).map((p) => photo(p.src));
+        return (
+          <a href={`/fotoreportages/${r.id}`} class="rep">
+            <div class="rep__cover"><Image src={img} alt={r.data.coverAlt} widths={[500, 800].filter((w) => w <= img.width)} sizes="(min-width: 1080px) 380px, 100vw" format="webp" quality={74} loading="lazy" /></div>
+            <div class="rep__strip">{strip.map((s) => <Image src={s} alt="" width={160} format="webp" quality={60} loading="lazy" />)}</div>
+            <div class="rep__b"><span class="eyebrow">{r.data.location}</span><h2>{r.data.title}</h2><p>{r.data.description}</p><span class="rep__n">{r.data.photos.length} foto's →</span></div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</Simple>
+
+<style>
+  .rep { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; text-decoration: none; color: var(--ink); box-shadow: var(--shadow); transition: transform 0.2s; }
+  .rep:hover { transform: translateY(-4px); color: var(--ink); }
+  .rep__cover img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+  .rep__strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; }
+  .rep__strip img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+  .rep__b { padding: 14px 20px 22px; }
+  .rep h2 { font-size: 1.4rem; margin: 8px 0 6px; }
+  .rep p { color: var(--ink-2); font-size: 0.95rem; margin: 0 0 10px; }
+  .rep__n { font-weight: 700; color: var(--terra); font-size: 0.9rem; }
+</style>

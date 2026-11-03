@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+import { photo } from '~/lib/photos';
+interface Props { href: string; title: string; text?: string; image: string; imageAlt?: string; label?: string; meta?: string; size?: 'normal' | 'large' }
+const { href, title, text, image, imageAlt = '', label, meta, size = 'normal' } = Astro.props;
+const img = photo(image);
+---
+
+<a class:list={['card', `card--${size}`]} href={href}>
+  <div class="card__img">
+    <Image src={img} alt={imageAlt} widths={[400, 700, 1000].filter((w) => w <= img.width)} sizes={size === 'large' ? '(min-width: 1080px) 600px, 100vw' : '(min-width: 1080px) 380px, 100vw'} format="webp" quality={72} loading="lazy" />
+    {label && <span class="card__label">{label}</span>}
+  </div>
+  <div class="card__b">
+    <h3>{title}</h3>
+    {text && <p>{text}</p>}
+    {meta && <span class="card__meta">{meta}</span>}
+  </div>
+</a>
+
+<style>
+  .card { display: flex; flex-direction: column; text-decoration: none; color: var(--ink); background: var(--card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-4px); color: var(--ink); box-shadow: 0 2px 4px rgb(0 0 0 / 0.06), 0 18px 40px rgb(0 0 0 / 0.1); }
+  .card__img { position: relative; aspect-ratio: 3/2; overflow: hidden; background: var(--paper-2); }
+  .card--large .card__img { aspect-ratio: 16/10; }
+  .card__img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+  .card:hover img { transform: scale(1.04); }
+  .card__label { position: absolute; left: 12px; top: 12px; background: var(--paper); color: var(--ink); font: 700 0.72rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 10px; border-radius: 999px; }
+  .card__b { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  h3 { margin: 0; font-size: 1.3rem; }
+  .card--large h3 { font-size: 1.6rem; }
+  p { margin: 0; color: var(--ink-2); font-size: 0.97rem; line-height: 1.55; }
+  .card__meta { margin-top: auto; padding-top: 8px; font-size: 0.82rem; color: var(--ink-3); }
+</style>

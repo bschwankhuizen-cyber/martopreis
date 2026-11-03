@@ -1,0 +1,25 @@
+---
+import Simple from '~/layouts/Simple.astro';
+import Card from '~/components/Card.astro';
+import { alleArtikelen, url } from '~/lib/content';
+import { REGIONS, TYPE_LABEL } from '~/data/site';
+
+const all = await alleArtikelen();
+const groups = REGIONS.filter((r) => r.id !== 'reviews' && r.id !== 'frankrijk').map((r) => ({ r, items: all.filter((a) => a.data.region === r.id && url(a.id) !== r.href) }));
+---
+
+<Simple title="Bestemmingen" seoTitle="Bestemmingen – reistips per land en regio" description="Alle bestemmingen van Mart op Reis op een rij: Dordogne, Cevennen, Moezel en Duitsland, Thailand en wintersport. Reisverslagen, campings, hotels en tips per regio." eyebrow="Ontdek" intro="Kies een land of regio en ontdek mijn reisverslagen, fotoreportages, campings en praktische tips." image="dordogne-rivier-panorama-ef.jpg">
+  {groups.map(({ r, items }, i) => (
+    <section class:list={['section', { 'section--tint': i % 2 === 1 }]}>
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">{r.country}</span><h2><a href={r.href} class="h-link">{r.name}</a></h2><p>{r.blurb}</p></div><a href={r.href} class="btn btn--ghost">Naar {r.name}</a></div>
+        {items.length > 0 && <div class="grid grid--4">{items.map((a) => <Card href={url(a.id)} title={a.data.title} image={a.data.hero} imageAlt={a.data.heroAlt} label={TYPE_LABEL[a.data.type]} />)}</div>}
+      </div>
+    </section>
+  ))}
+</Simple>
+
+<style>
+  .h-link { color: inherit; text-decoration: none; }
+  .h-link:hover { text-decoration: underline; }
+</style>

@@ -1,0 +1,19 @@
+---
+interface Props { score: number; max?: number; label?: string }
+const { score, max = 5, label = 'Eindoordeel' } = Astro.props;
+---
+
+<div class="score">
+  <div class="score__n"><strong>{score.toLocaleString('nl-NL')}</strong><span>/ {max}</span></div>
+  <div><p class="score__l">{label}</p><div class="score__bar"><i style={`width:${(score / max) * 100}%`}></i></div><slot /></div>
+</div>
+
+<style>
+  .score { margin: 2em auto; display: flex; gap: 22px; align-items: center; padding: 22px; border-radius: var(--radius-lg); background: var(--ink); color: #fff; }
+  .score__n strong { font: 700 3rem/1 var(--serif); color: var(--sun); }
+  .score__n span { color: #aeb4ba; margin-left: 4px; }
+  .score__l { font-weight: 700; margin: 0 0 8px; }
+  .score__bar { height: 8px; background: #33393e; border-radius: 9px; overflow: hidden; width: min(320px, 100%); }
+  .score__bar i { display: block; height: 100%; background: var(--sun); }
+  .score :global(p:last-child) { margin-bottom: 0; color: #d9dcdf; }
+</style>

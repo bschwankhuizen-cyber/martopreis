@@ -1,0 +1,42 @@
+# 301-redirects van de oude WordPress-URL's naar de nieuwe structuur
+/camping-val-de-cantobre            /frankrijk/cevennen/camping-val-de-cantobre   301
+/camping-val-de-cantobre/           /frankrijk/cevennen/camping-val-de-cantobre   301
+/halfpension-duitsland              /duitsland/halfpension-hotels                 301
+/halfpension-duitsland/             /duitsland/halfpension-hotels                 301
+/hotels-halfpension-moezel          /duitsland/moezel-halfpension-hotels          301
+/hotels-halfpension-moezel/         /duitsland/moezel-halfpension-hotels          301
+/familie-groepsreis-naar-thailand   /thailand/familie-groepsreis                  301
+/familie-groepsreis-naar-thailand/  /thailand/familie-groepsreis                  301
+/skis-huren                         /wintersport/ski-huren                        301
+/skis-huren/                        /wintersport/ski-huren                        301
+/review-leawin-t4-elektrische-step  /reviews/leawin-t4-elektrische-step           301
+/review-leawin-t4-elektrische-step/ /reviews/leawin-t4-elektrische-step           301
+
+# Oude blog/categorie/placeholder-pagina's
+/category/*                         /reisverslagen                                301
+/blog                               /reisverslagen                                301
+/blog/*                             /reisverslagen                                301
+/blog-post-title-*                  /reisverslagen                                301
+/home                               /                                             301
+
+# WordPress-feeds en sitemaps
+/feed                               /rss.xml                                      301
+/feed/                              /rss.xml                                      301
+/comments/feed                      /rss.xml                                      301
+/comments/feed/                     /rss.xml                                      301
+/sitemap.rss                        /rss.xml                                      301
+/sitemap_index.xml                  /sitemap.xml                                  301
+/wp-sitemap.xml                     /sitemap.xml                                  301
+/page-sitemap.xml                   /sitemap.xml                                  301
+/category-sitemap.xml               /sitemap.xml                                  301
+/post-sitemap.xml                   /sitemap.xml                                  301
+
+# Oude uploads (foto's/pdf's) die nog in Google Afbeeldingen of op externe sites staan
+/wp-content/uploads/sites/5/2024/05/kaart-dordogne.pdf                    /downloads/kaart-bezienswaardigheden-dordogne.pdf   301
+/wp-content/uploads/sites/5/2024/05/kaart_fietsroutes_Dordogne.pdf        /downloads/kaart-fietsroutes-dordogne.pdf           301
+/wp-content/uploads/sites/5/2023/07/plattegrond_camping_Val_de_Cantobre.pdf /downloads/plattegrond-camping-val-de-cantobre.pdf 301
+/wp-content/*                       /                                             301
+/wp-admin/*                         /                                             301
+/wp-login.php                       /                                             301
+/xmlrpc.php                         /                                             301
+/wp-json/*                          /                                             301

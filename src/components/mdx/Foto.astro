@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { photo } from '~/lib/photos';
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  /** 'normaal' (tekstbreedte), 'breed' of 'vol' */
+  size?: 'normaal' | 'breed' | 'vol';
+  href?: string;
+  eager?: boolean;
+}
+const { src, alt, caption, size = 'breed', href, eager = false } = Astro.props;
+const img = photo(src);
+const big = size !== 'normaal';
+const widths = [480, 768, 1100, 1600].filter((w) => w <= img.width);
+if (!widths.length) widths.push(img.width);
+---
+
+<figure class:list={['foto', { wide: size === 'breed', full: size === 'vol' }]}>
+  {
+    href ? (
+      <a href={href} rel="sponsored nofollow noopener" target="_blank">
+        <Image src={img} alt={alt} widths={widths} sizes={big ? '(min-width: 1080px) 1040px, 100vw' : '(min-width: 760px) 720px, 100vw'} loading={eager ? 'eager' : 'lazy'} format="webp" quality={78} />
+      </a>
+    ) : (
+      <Image src={img} alt={alt} widths={widths} sizes={big ? '(min-width: 1080px) 1040px, 100vw' : '(min-width: 760px) 720px, 100vw'} loading={eager ? 'eager' : 'lazy'} format="webp" quality={78} data-zoom={src} />
+    )
+  }
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .foto { margin: 2em auto; }
+  .foto img { width: 100%; border-radius: var(--radius); background: var(--paper-2); }
+  .foto.full img { border-radius: 0; }
+  .foto img[data-zoom] { cursor: zoom-in; }
+  figcaption { margin-top: 10px; font-size: 0.9rem; color: var(--ink-3); text-align: center; font-style: italic; }
+</style>

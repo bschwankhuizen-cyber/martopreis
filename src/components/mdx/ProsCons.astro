@@ -1,0 +1,19 @@
+---
+interface Props { plus: string[]; min: string[] }
+const { plus, min } = Astro.props;
+---
+
+<div class="pc wide">
+  <div class="pc__col pc__col--plus"><p class="pc__t">👍 Pluspunten</p><ul>{plus.map((p) => <li>{p}</li>)}</ul></div>
+  <div class="pc__col pc__col--min"><p class="pc__t">👎 Minpunten</p><ul>{min.map((p) => <li>{p}</li>)}</ul></div>
+</div>
+
+<style>
+  .pc { margin: 2em auto; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pc__col { padding: 20px 22px; border-radius: var(--radius); background: var(--teal-2); }
+  .pc__col--min { background: #fbe6dc; }
+  .pc__t { font-weight: 750; margin: 0 0 8px; }
+  ul { margin: 0; padding-left: 1.2em; }
+  li { margin: 0.35em 0; }
+  @media (max-width: 700px) { .pc { grid-template-columns: 1fr; } }
+</style>

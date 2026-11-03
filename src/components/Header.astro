@@ -1,0 +1,78 @@
+---
+import { NAV } from '~/data/site';
+interface Props { overlay?: boolean }
+const { overlay = false } = Astro.props;
+const path = Astro.url.pathname;
+const active = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+---
+
+<header class:list={['hdr', { 'hdr--overlay': overlay }]}>
+  <div class="wrap hdr__in">
+    <a href="/" class="hdr__logo" aria-label="Mart op Reis – home">
+      <img src="/logo.svg" alt="Mart op Reis" width="124" height="50" />
+    </a>
+    <nav aria-label="Hoofdmenu" class="hdr__nav">
+      <details class="hdr__burger">
+        <summary aria-label="Menu openen">
+          <span></span><span></span><span></span>
+        </summary>
+        <ul class="menu">
+          {
+            NAV.map((item) => (
+              <li class:list={{ 'has-sub': !!item.children }}>
+                <a href={item.href} aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>
+                {item.children && (
+                  <ul class="sub">
+                    {item.children.map((c) => (
+                      <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .hdr { position: sticky; top: 0; z-index: 50; background: rgb(251 248 242 / 0.92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+  .hdr__in { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .hdr__logo img { height: 46px; width: auto; }
+  .menu { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; align-items: center; }
+  .menu > li { position: relative; }
+  .menu a { display: block; padding: 10px 14px; border-radius: 999px; color: var(--ink); text-decoration: none; font: 600 0.95rem/1.2 var(--sans); }
+  .menu a:hover, .menu a[aria-current='page'] { background: var(--sun-2); color: var(--ink); }
+  .sub { list-style: none; margin: 0; padding: 8px; position: absolute; top: 100%; left: 0; min-width: 210px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--line); opacity: 0; visibility: hidden; transform: translateY(6px); transition: 0.15s; }
+  .sub a { border-radius: 10px; font-weight: 550; }
+  .has-sub:hover .sub, .has-sub:focus-within .sub { opacity: 1; visibility: visible; transform: none; }
+  .has-sub > a::after { content: ''; display: inline-block; width: 6px; height: 6px; margin-left: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-3px) rotate(45deg); }
+  summary { display: none; }
+  details > .menu { display: flex; }
+
+  @media (max-width: 860px) {
+    summary { display: grid; gap: 5px; place-content: center; width: 46px; height: 46px; border-radius: 12px; cursor: pointer; list-style: none; background: var(--paper-2); }
+    summary::-webkit-details-marker { display: none; }
+    summary span { width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: 0.2s; }
+    details[open] summary span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    details[open] summary span:nth-child(2) { opacity: 0; }
+    details[open] summary span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    details:not([open]) > .menu { display: none; }
+    details[open] > .menu { position: fixed; inset: 72px 0 auto 0; display: block; background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px 16px 24px; max-height: calc(100dvh - 72px); overflow-y: auto; box-shadow: var(--shadow); }
+    .menu a { padding: 14px 12px; font-size: 1.05rem; border-radius: 12px; }
+    .sub { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; background: transparent; padding: 0 0 6px 14px; display: grid; grid-template-columns: 1fr 1fr; }
+    .has-sub > a::after { display: none; }
+  }
+</style>
+
+<script>
+  // Desktop: menu altijd open; mobiel: sluiten na klik
+  const d = document.querySelector<HTMLDetailsElement>('.hdr__burger');
+  const mq = matchMedia('(max-width: 860px)');
+  const sync = () => { if (d) d.open = !mq.matches; };
+  sync();
+  mq.addEventListener('change', sync);
+  d?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => { if (mq.matches) d.open = false; }));
+</script>

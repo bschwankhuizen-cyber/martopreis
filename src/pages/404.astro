@@ -1,0 +1,14 @@
+---
+import Simple from '~/layouts/Simple.astro';
+import Card from '~/components/Card.astro';
+import { REGIONS } from '~/data/site';
+---
+
+<Simple title="Oeps, deze pagina is op reis" description="Deze pagina bestaat niet (meer). Bekijk de bestemmingen en reisverslagen van Mart op Reis." eyebrow="404" intro="De pagina die je zoekt bestaat niet (meer). Misschien vind je hieronder wat je zocht?" noindex>
+  <section class="section">
+    <div class="wrap">
+      <p><a href="/" class="btn">Naar de homepage</a> <a href="/reisverslagen" class="btn btn--ghost">Reisverslagen</a></p>
+      <div class="grid grid--3" style="margin-top:32px">{REGIONS.filter((r) => r.id !== 'frankrijk').map((r) => <Card href={r.href} title={r.name} text={r.blurb} image={r.image} label={r.country} />)}</div>
+    </div>
+  </section>
+</Simple>

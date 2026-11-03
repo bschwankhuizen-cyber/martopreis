@@ -1,0 +1,62 @@
+<dialog class="lb" aria-label="Foto vergroot">
+  <button class="lb__x" aria-label="Sluiten">×</button>
+  <button class="lb__nav lb__prev" aria-label="Vorige foto">‹</button>
+  <figure><img alt="" /><figcaption></figcaption></figure>
+  <button class="lb__nav lb__next" aria-label="Volgende foto">›</button>
+</dialog>
+
+<style>
+  .lb { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100dvh; width: 100vw; height: 100dvh; }
+  .lb::backdrop { background: rgb(10 12 14 / 0.92); }
+  .lb figure { margin: 0; height: 100%; display: grid; place-content: center; padding: 56px 64px 72px; }
+  .lb img { max-height: calc(100dvh - 140px); max-width: calc(100vw - 128px); width: auto; border-radius: 8px; object-fit: contain; }
+  .lb figcaption { color: #e9ebed; text-align: center; margin-top: 12px; font-size: 0.95rem; }
+  .lb button { position: fixed; background: rgb(255 255 255 / 0.12); color: #fff; border: 0; border-radius: 999px; width: 48px; height: 48px; font-size: 30px; line-height: 1; cursor: pointer; }
+  .lb button:hover { background: var(--sun); color: var(--ink); }
+  .lb__x { top: 14px; right: 14px; }
+  .lb__prev { left: 10px; top: 50%; }
+  .lb__next { right: 10px; top: 50%; }
+  @media (max-width: 640px) { .lb figure { padding: 60px 8px 80px; } .lb img { max-width: calc(100vw - 16px); } .lb__prev, .lb__next { top: auto; bottom: 16px; } }
+</style>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('.lb')!;
+  const img = dlg.querySelector('img')!;
+  const cap = dlg.querySelector('figcaption')!;
+  let group: HTMLAnchorElement[] = [];
+  let i = 0;
+  const show = (n: number) => {
+    i = (n + group.length) % group.length;
+    const a = group[i];
+    img.src = a.href;
+    img.alt = a.querySelector('img')?.alt ?? '';
+    cap.textContent = a.dataset.caption ?? '';
+  };
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[data-lightbox]');
+    if (!a) return;
+    e.preventDefault();
+    const root = a.closest('.gal, .rep') ?? document;
+    group = [...root.querySelectorAll<HTMLAnchorElement>('a[data-lightbox]')];
+    show(group.indexOf(a));
+    dlg.showModal();
+  });
+  dlg.querySelector('.lb__x')!.addEventListener('click', () => dlg.close());
+  dlg.querySelector('.lb__prev')!.addEventListener('click', () => show(i - 1));
+  dlg.querySelector('.lb__next')!.addEventListener('click', () => show(i + 1));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg || (e.target as HTMLElement).tagName === 'FIGURE') dlg.close(); });
+  document.addEventListener('keydown', (e) => {
+    if (!dlg.open) return;
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+  // losse foto's ook vergroten
+  document.querySelectorAll<HTMLImageElement>('img[data-zoom]').forEach((el) => {
+    el.addEventListener('click', () => {
+      group = [Object.assign(document.createElement('a'), { href: el.currentSrc || el.src, dataset: {} })];
+      group[0].dataset.caption = el.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
+      i = 0; img.src = group[0].href; img.alt = el.alt; cap.textContent = group[0].dataset.caption ?? '';
+      dlg.showModal();
+    });
+  });
+</script>

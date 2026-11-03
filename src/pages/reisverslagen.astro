@@ -1,0 +1,27 @@
+---
+import Simple from '~/layouts/Simple.astro';
+import Card from '~/components/Card.astro';
+import { alleArtikelen, url, datum } from '~/lib/content';
+import { SITE, REGIONS } from '~/data/site';
+
+const all = await alleArtikelen();
+const verslagen = all.filter((a) => ['reisverslag', 'bezienswaardigheid'].includes(a.data.type) || (a.data.type === 'camping' && a.data.visited));
+const byRegion = REGIONS.map((r) => ({ r, items: verslagen.filter((a) => a.data.region === r.id) })).filter((g) => g.items.length);
+const schema = [{
+  '@type': 'CollectionPage', name: 'Reisverslagen', url: `${SITE.url}/reisverslagen`, inLanguage: 'nl-NL',
+  mainEntity: { '@type': 'ItemList', itemListElement: verslagen.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(url(a.id), SITE.url).href, name: a.data.title })) },
+}];
+---
+
+<Simple title="Reisverslagen" seoTitle="Reisverslagen van Mart – persoonlijke reisverhalen" description="Alle persoonlijke reisverslagen van Mart: zelf bezochte stadjes, kastelen en campings in de Dordogne, de Cevennen en verder. Met eerlijke tips en eigen foto's." eyebrow="Persoonlijk & eerlijk" intro="Hier lees je mijn persoonlijke verhalen: plekken die ik zelf heb bezocht, met mijn eigen foto's, ervaringen en praktische tips." image="plein-centraal-monpazier-ef.jpg" schema={schema}>
+  {byRegion.map(({ r, items }, i) => (
+    <section class:list={['section', { 'section--tint': i % 2 === 1 }]}>
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">{r.country}</span><h2>{r.name}</h2></div><a href={r.href} class="btn btn--ghost">Alles over {r.name}</a></div>
+        <div class="grid grid--3">
+          {items.map((a) => <Card href={url(a.id)} title={a.data.title} text={a.data.description} image={a.data.hero} imageAlt={a.data.heroAlt} label={a.data.visited ? `Bezocht ${a.data.visited}` : 'Reisverslag'} meta={`Bijgewerkt ${datum(a.data.updated ?? a.data.published)}`} />)}
+        </div>
+      </div>
+    </section>
+  ))}
+</Simple>

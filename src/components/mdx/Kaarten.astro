@@ -1,0 +1,33 @@
+---
+/** Grid van linkkaarten naar (interne) pagina's */
+import { Image } from 'astro:assets';
+import { photo } from '~/lib/photos';
+type K = { href: string; titel: string; tekst?: string; foto?: string; label?: string };
+interface Props { items: K[] }
+const { items } = Astro.props;
+---
+
+<div class="kk wide">
+  {
+    items.map((k) => (
+      <a class="kk__card" href={k.href} {...(/^https?:/.test(k.href) ? { target: '_blank', rel: 'sponsored nofollow noopener' } : {})}>
+        {k.foto && <Image src={photo(k.foto)} alt="" widths={[400, 700].filter((w) => w <= photo(k.foto!).width)} sizes="(min-width: 1080px) 340px, 100vw" format="webp" quality={72} loading="lazy" />}
+        <span class="kk__b">
+          {k.label && <span class="eyebrow">{k.label}</span>}
+          <strong>{k.titel}</strong>
+          {k.tekst && <span class="kk__t">{k.tekst}</span>}
+        </span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .kk { margin: 2em auto; display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  .kk__card { display: flex; flex-direction: column; background: var(--card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); text-decoration: none; color: var(--ink); box-shadow: var(--shadow); transition: transform 0.2s; }
+  .kk__card:hover { transform: translateY(-3px); color: var(--ink); }
+  .kk__card img { aspect-ratio: 16/10; object-fit: cover; width: 100%; border-radius: 0; }
+  .kk__b { padding: 16px 18px 20px; display: grid; gap: 6px; }
+  strong { font: 600 1.25rem/1.2 var(--serif); }
+  .kk__t { font-size: 0.95rem; color: var(--ink-2); line-height: 1.5; }
+</style>

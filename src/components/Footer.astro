@@ -1,0 +1,53 @@
+---
+import { SITE, REGIONS } from '~/data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="wrap ftr__grid">
+    <div class="ftr__brand">
+      <img src="/logo.svg" alt="Mart op Reis" width="124" height="50" loading="lazy" />
+      <p>{SITE.tagline}. Alles wat je hier ziet heb ik zelf bezocht, gefotografeerd en opgeschreven.</p>
+    </div>
+    <nav aria-label="Bestemmingen">
+      <h2>Bestemmingen</h2>
+      <ul>{REGIONS.filter((r) => r.id !== 'reviews').map((r) => <li><a href={r.href}>{r.name}</a></li>)}</ul>
+    </nav>
+    <nav aria-label="Ontdekken">
+      <h2>Ontdekken</h2>
+      <ul>
+        <li><a href="/reisverslagen">Reisverslagen</a></li>
+        <li><a href="/fotoreportages">Fotoreportages</a></li>
+        <li><a href="/frankrijk/dordogne/campings">Campings Dordogne</a></li>
+        <li><a href="/frankrijk/dordogne/kaart">Kaart Dordogne</a></li>
+        <li><a href="/reviews">Reviews</a></li>
+      </ul>
+    </nav>
+    <nav aria-label="Over deze site">
+      <h2>Over</h2>
+      <ul>
+        <li><a href="/over-mart">Over Mart</a></li>
+        <li><a href="/disclaimer">Disclaimer &amp; affiliate</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/rss.xml">RSS-feed</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap ftr__base">
+    <span>© {year} {SITE.name}</span>
+    <span>Met liefde gemaakt tussen twee reizen door ✈︎</span>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--ink); color: #d9dcdf; margin-top: 0; padding-top: 64px; }
+  .ftr__grid { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 40px; }
+  .ftr__brand img { height: 64px; width: auto; background: var(--paper); padding: 8px 14px; border-radius: 14px; box-sizing: content-box; }
+  .ftr__brand p { margin-top: 16px; max-width: 38ch; color: #aeb4ba; font-size: 0.97rem; }
+  .ftr h2 { font: 700 0.78rem/1 var(--sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sun); margin-bottom: 16px; }
+  .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .ftr a { color: #e9ebed; text-decoration: none; }
+  .ftr a:hover { color: var(--sun); text-decoration: underline; }
+  .ftr__base { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid #2c3236; margin-top: 48px; padding: 20px 0 28px; font-size: 0.85rem; color: #8b9298; }
+  @media (max-width: 860px) { .ftr__grid { grid-template-columns: 1fr 1fr; } .ftr__brand { grid-column: 1 / -1; } }
+</style>

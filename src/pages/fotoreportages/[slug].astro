@@ -1,0 +1,103 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { getCollection, getEntry } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { photo } from '~/lib/photos';
+import { url, datum } from '~/lib/content';
+import { breadcrumbLd } from '~/lib/schema';
+import { SITE } from '~/data/site';
+
+export async function getStaticPaths() {
+  const reps = await getCollection('fotoreportages');
+  return reps.map((r) => ({ params: { slug: r.id }, props: { r } }));
+}
+const { r } = Astro.props;
+const d = r.data;
+const art = d.article ? await getEntry('artikelen', d.article) : undefined;
+const cover = photo(d.cover);
+const items = await Promise.all(
+  d.photos.map(async (p) => {
+    const img = photo(p.src);
+    const full = await getImage({ src: img, width: Math.min(1800, img.width), format: 'webp', quality: 80 });
+    return { ...p, img, full: full.src, alt: p.alt ?? p.caption ?? d.title };
+  }),
+);
+const href = `/fotoreportages/${r.id}`;
+const crumbs = [{ name: 'Home', href: '/' }, { name: 'Fotoreportages', href: '/fotoreportages' }];
+const schema = [
+  {
+    '@type': 'ImageGallery',
+    '@id': `${SITE.url}${href}#galerij`,
+    name: d.title,
+    description: d.description,
+    url: `${SITE.url}${href}`,
+    datePublished: d.date.toISOString(),
+    inLanguage: 'nl-NL',
+    author: { '@id': `${SITE.url}/#mart` },
+    contentLocation: { '@type': 'Place', name: d.location },
+    associatedMedia: items.map((i) => ({
+      '@type': 'ImageObject',
+      contentUrl: new URL(i.full, SITE.url).href,
+      caption: i.caption ?? i.alt,
+      creator: { '@id': `${SITE.url}/#mart` },
+      copyrightHolder: { '@id': `${SITE.url}/#mart` },
+      creditText: 'Mart op Reis',
+    })),
+  },
+  breadcrumbLd(crumbs, d.title, href),
+];
+---
+
+<Base title={d.title} description={d.description} image={d.cover} imageAlt={d.coverAlt} type="article" published={d.date} schema={schema}>
+  <header class="rh">
+    <Image src={cover} alt={d.coverAlt} widths={[800, 1400, 2000].filter((w) => w <= cover.width)} sizes="100vw" format="webp" quality={76} loading="eager" fetchpriority="high" class="rh__img" />
+    <div class="rh__shade"></div>
+    <div class="wrap rh__in">
+      <Breadcrumbs items={crumbs} current={d.title} />
+      <span class="eyebrow rh__eb">Fotoreportage · {d.location}</span>
+      <h1>{d.title}</h1>
+      <p>{d.photos.length} foto's · {datum(d.date)}{d.camera && ` · 📷 ${d.camera}`}</p>
+    </div>
+  </header>
+
+  <div class="measure rh__intro">
+    <p>{d.intro}</p>
+    {art && <p><a class="btn btn--ghost" href={url(art.id)}>Lees het verhaal: {art.data.title}</a></p>}
+  </div>
+
+  <section class="rep wrap" aria-label="Foto's">
+    {items.map((i, n) => (
+      <figure class:list={['rep__f', { 'rep__f--wide': i.img.width / i.img.height > 1.9 || n % 7 === 0 }]}>
+        <a href={i.full} data-lightbox data-caption={i.caption ?? ''}>
+          <Image src={i.img} alt={i.alt} widths={[500, 900, 1300].filter((w) => w <= i.img.width)} sizes="(min-width: 1200px) 600px, 100vw" format="webp" quality={76} loading={n < 2 ? 'eager' : 'lazy'} />
+        </a>
+        {i.caption && <figcaption>{i.caption}</figcaption>}
+      </figure>
+    ))}
+  </section>
+
+  <div class="measure rh__end">
+    <p>Alle foto's © Mart op Reis. Wil je een foto gebruiken? Vermeld dan de bron met een link naar deze pagina.</p>
+    <a href="/fotoreportages" class="btn">Meer fotoreportages</a>
+  </div>
+</Base>
+
+<style>
+  .rh { position: relative; min-height: min(70vh, 620px); display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: #222; }
+  .rh__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .rh__shade { position: absolute; inset: 0; background: linear-gradient(transparent 30%, rgb(0 0 0 / 0.7)); }
+  .rh__in { position: relative; padding: 120px 0 40px; }
+  .rh h1 { color: #fff; margin: 12px 0 6px; }
+  .rh p { margin: 0; color: #eee; }
+  .rh :global(.bc) { color: #eee; margin-bottom: 16px; }
+  .rh__eb { color: #fff; }
+  .rh__intro { padding: 40px 0 16px; font-size: 1.15rem; color: var(--ink-2); }
+  .rep { columns: 2 340px; column-gap: 16px; padding-bottom: 24px; }
+  .rep__f { break-inside: avoid; margin: 0 0 16px; }
+  .rep__f a { display: block; border-radius: var(--radius); overflow: hidden; cursor: zoom-in; }
+  .rep__f img { width: 100%; transition: transform 0.4s; }
+  .rep__f a:hover img { transform: scale(1.02); }
+  figcaption { font-size: 0.9rem; color: var(--ink-3); padding: 8px 2px 0; }
+  .rh__end { padding: 24px 0 72px; color: var(--ink-3); font-size: 0.92rem; }
+</style>

@@ -1,0 +1,36 @@
+title: "Fotoreportage Monpazier"
+description: "Ruim twintig foto's van Monpazier in de Dordogne: de stadspoort, het plein met bogengalerijen, de 13e-eeuwse markthal, terrasjes en de St. Dominicuskerk."
+region: dordogne
+date: 2023-08-15
+location: "Monpazier, Dordogne"
+camera: "Samsung Galaxy S22"
+cover: panorama-plein-monpazier-ef.jpg
+coverAlt: "Panorama van het centrale plein van Monpazier"
+intro: "In augustus 2023 bezocht ik Monpazier twee keer. Dit middeleeuwse bastidestadje is zo fotogeniek dat ik bijna op elke hoek mijn telefoon pakte. Hier zie je alle foto's op een rij – van de stadspoort tot het plein met de eeuwenoude markthal."
+article: frankrijk/dordogne/monpazier
+photos:
+  - { src: toegangspoort-centrum-monpazier-ef-1.jpg, caption: "De toegangspoort van Monpazier" }
+  - { src: toegangspoort-centrum-monpazier-ef.jpg, caption: "Door de stadspoort het centrum in" }
+  - { src: toegangspoort-centrum-monpazier-2-ef.jpg, caption: "De stadspoort vanaf de andere kant" }
+  - { src: straatje-in-monpazier-ef.jpg, caption: "Een van de historische straatjes" }
+  - { src: sfeervol-straatje-in-monpazier-richting-het-plein-ef.jpg, caption: "Een van de leuke winkelstraatjes met tal van boetieks en ateliers" }
+  - { src: straatje-in-monpazier-richting-het-plein-ef.jpg, caption: "Via de straatjes loop je vanzelf naar het plein" }
+  - { src: winkel-gevel-in-monpazier-foi-gras-ef.jpg, caption: "Lokale specialiteiten en typisch Franse delicatessen" }
+  - { src: winkeltje-in-monpazier-ef.jpg, caption: "Wijnwinkeltje met wijnen uit de Périgord" }
+  - { src: winkeltje-in-monpazier-ef-1.jpg, caption: "Hoedenwinkeltje in een van de historische panden" }
+  - { src: panorama-plein-monpazier-ef.jpg, caption: "Panorama van het centrale plein" }
+  - { src: plein-met-overdekte-markt-monpazier-ef.jpg, caption: "Het plein met de overdekte markthal" }
+  - { src: overdekte-markt-monpazier-ef.jpg, caption: "Halle centrale uit de 13e eeuw – op donderdag is hier markt" }
+  - { src: dakconstructie-van-eiken-balken-overdekte-markt-monpazier-ef.jpg, caption: "Houten dakconstructie van eikenbalken met stenen borstwering" }
+  - { src: plein-gezien-vanuit-de-gallerij-in-monpazier-ef.jpg, caption: "Het plein gezien vanuit de bogengalerij" }
+  - { src: bogengalerij-monpazier-ef.jpg, caption: "Lekker koel lopen onder de bogengalerijen" }
+  - { src: plein-centraal-monpazier-ef.jpg, caption: "Een en al sfeer in Monpazier" }
+  - { src: doorkijkje-marktplein-monpazier-ef.jpg, caption: "Doorkijkje naar het marktplein" }
+  - { src: plein-en-kerkje-monpazier-ef.jpg, caption: "Het plein met de kerktoren op de achtergrond" }
+  - { src: terrasje-in-monpazier-op-het-centale-plein-ef.jpg, caption: "Terrasje op het centrale plein" }
+  - { src: terrasje-vol-met-mensen-in-monpazier.jpg, caption: "In de schaduw is het goed toeven" }
+  - { src: restaurant-in-een-straatje-in-monpazier-ef.jpg, caption: "Restaurantje in een zijstraat" }
+  - { src: restaurant-privilage-du-perigord-met-patio-in-monpazier-ef.jpg, caption: "Restaurant Privilège du Périgord met schaduwrijke patio" }
+  - { src: toeristen-in-monpaizer-ef.jpg, caption: "Bezoekers slenteren door het dorp" }
+  - { src: kerk-dak-monpazier-ef.jpg, caption: "De St. Dominicuskerk uit de 13e eeuw" }
+  - { src: st-dominic-kerk-monpazier-ef.jpg, caption: "De kerk ligt vlak bij het centrale plein" }

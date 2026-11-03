@@ -1,0 +1,40 @@
+---
+import '~/styles/global.css';
+import Seo from '~/components/Seo.astro';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import Lightbox from "~/components/Lightbox.astro";
+import { SITE } from '~/data/site';
+
+type SeoProps = import('~/components/Seo.astro').Props;
+interface Props extends SeoProps {
+  headerOverlay?: boolean;
+}
+const { headerOverlay = false, ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fbf8f2" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <Seo {...seo} />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Naar de inhoud</a>
+    <Header overlay={headerOverlay} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Lightbox />
+  </body>
+</html>

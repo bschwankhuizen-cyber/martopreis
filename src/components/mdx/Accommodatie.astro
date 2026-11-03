@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import { photo } from '~/lib/photos';
+interface Props {
+  naam: string;
+  foto?: string;
+  fotoAlt?: string;
+  score?: string | number; // bv. "8,7"
+  plaats?: string;
+  kenmerken?: string[];
+  prijs?: string; // bv. "€ 239"
+  prijsToelichting?: string; // bv. "2 nachten halfpension p.p."
+  link?: string;
+  linkLabel?: string;
+  partner?: string; // naam aanbieder
+  badge?: string; // bv. "Aanrader van Mart"
+  meerInfo?: string; // interne link naar eigen pagina
+}
+const { naam, foto, fotoAlt, score, plaats, kenmerken = [], prijs, prijsToelichting, link, linkLabel, partner, badge, meerInfo } = Astro.props;
+---
+
+<article class="acc wide">
+  {
+    foto && (
+      <div class="acc__img">
+        <Image src={photo(foto)} alt={fotoAlt ?? naam} widths={[360, 600, 900].filter((w) => w <= photo(foto).width)} sizes="(min-width: 760px) 340px, 100vw" format="webp" quality={75} loading="lazy" />
+        {badge && <span class="acc__badge">{badge}</span>}
+      </div>
+    )
+  }
+  <div class="acc__body">
+    <div class="acc__top">
+      <div>
+        <h3>{naam}</h3>
+        {plaats && <p class="acc__plaats">📍 {plaats}</p>}
+      </div>
+      {score && <span class="acc__score" title="Gemiddelde gastbeoordeling">{score}</span>}
+    </div>
+    {kenmerken.length > 0 && <ul>{kenmerken.map((k) => <li>{k}</li>)}</ul>}
+    <slot />
+    <div class="acc__foot">
+      {
+        prijs && (
+          <p class="acc__prijs">
+            <span class="acc__vanaf">vanaf</span> <strong>{prijs}</strong>
+            {prijsToelichting && <small>{prijsToelichting}</small>}
+          </p>
+        )
+      }
+      <div class="acc__cta">
+        {meerInfo && <a class="btn btn--ghost" href={meerInfo}>Lees meer</a>}
+        {link && (
+          <a class="btn btn--sun" href={link} target="_blank" rel="sponsored nofollow noopener">
+            {linkLabel ?? (partner ? `Bekijk bij ${partner}` : 'Bekijk beschikbaarheid')}
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .acc { margin: 1.4em auto; display: grid; grid-template-columns: 340px 1fr; background: var(--card); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .acc__img { position: relative; background: var(--paper-2); }
+  .acc__img img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3; border-radius: 0; }
+  .acc__badge { position: absolute; top: 12px; left: 12px; background: var(--sun); color: var(--ink); font: 700 0.75rem/1 var(--sans); padding: 7px 10px; border-radius: 999px; }
+  .acc__body { padding: 22px 24px; display: flex; flex-direction: column; }
+  .acc__top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+  .acc h3 { margin: 0 0 4px; font-size: 1.35rem; }
+  .acc__plaats { margin: 0; color: var(--ink-3); font-size: 0.92rem; }
+  .acc__score { flex: none; background: var(--teal); color: #fff; font: 750 1rem/1 var(--sans); padding: 10px 10px; border-radius: 12px 12px 12px 2px; min-width: 46px; text-align: center; }
+  .acc ul { list-style: none; padding: 0; margin: 14px 0 8px; display: grid; gap: 6px; font-size: 0.97rem; }
+  .acc li { padding-left: 26px; position: relative; margin: 0; }
+  .acc li::before { content: '✓'; position: absolute; left: 0; top: 0; color: var(--teal); font-weight: 800; }
+  .acc__foot { margin-top: auto; padding-top: 14px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: end; border-top: 1px dashed var(--line); }
+  .acc__prijs { margin: 0; line-height: 1.2; }
+  .acc__prijs strong { font: 700 1.5rem/1 var(--serif); }
+  .acc__prijs small { display: block; color: var(--ink-3); font-size: 0.8rem; margin-top: 4px; }
+  .acc__vanaf { font-size: 0.8rem; color: var(--ink-3); }
+  .acc__cta { display: flex; gap: 8px; flex-wrap: wrap; }
+  @media (max-width: 760px) { .acc { grid-template-columns: 1fr; } }
+</style>
