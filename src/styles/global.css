@@ -103,8 +103,8 @@ a:hover { color: var(--terra); }
 
 /* ---------- Prose (artikelinhoud) ---------- */
 .prose { font-size: 1.1rem; }
-.prose > * { width: min(100%, var(--measure)); margin-inline: auto; }
-.prose > .wide { width: min(100%, 1040px); }
+.prose > * { width: min(100% - 32px, var(--measure)); margin-inline: auto; }
+.prose > .wide { width: min(100% - 32px, 1040px); }
 .prose > .full { width: 100%; }
 .prose h2 { margin-top: 2.2em; }
 .prose h3 { margin-top: 1.8em; }
