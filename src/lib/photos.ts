@@ -17,3 +17,16 @@ export function photo(name: string): ImageMetadata {
 export function hasPhoto(name: string) {
   return byName.has(name);
 }
+
+/**
+ * Bij object-fit: cover wordt een foto die breder is dan het kader extra ingezoomd.
+ * Bereken daarom de benodigde breedte (sizes) en een passende reeks widths.
+ */
+export function coverImg(img: ImageMetadata, boxRatio: number, slotPx: number, mobileVw = 100) {
+  const zoom = Math.max(1, img.width / img.height / boxRatio);
+  const desktop = Math.round(slotPx * zoom);
+  const mobile = Math.round(mobileVw * zoom);
+  const widths = [400, 600, 800, 1100, 1400, 1800, 2200].filter((w) => w <= img.width);
+  if (!widths.length) widths.push(img.width);
+  return { widths, sizes: `(min-width: 1080px) ${desktop}px, ${mobile}vw` };
+}

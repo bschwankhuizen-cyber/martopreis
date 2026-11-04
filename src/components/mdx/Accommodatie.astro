@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 interface Props {
   naam: string;
   foto?: string;
@@ -23,7 +23,7 @@ const { naam, foto, fotoAlt, score, plaats, kenmerken = [], prijs, prijsToelicht
   {
     foto && (
       <div class="acc__img">
-        <Image src={photo(foto)} alt={fotoAlt ?? naam} widths={[360, 600, 900].filter((w) => w <= photo(foto).width)} sizes="(min-width: 760px) 340px, 100vw" format="webp" quality={75} loading="lazy" />
+        <Image src={photo(foto)} alt={fotoAlt ?? naam} {...coverImg(photo(foto), 4 / 3, 340)} format="webp" quality={75} loading="lazy" />
         {badge && <span class="acc__badge">{badge}</span>}
       </div>
     )

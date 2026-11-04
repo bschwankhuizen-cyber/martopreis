@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '~/layouts/Base.astro';
 import Card from '~/components/Card.astro';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 import { alleArtikelen, url, datum } from '~/lib/content';
 import { REGIONS, SITE, TYPE_LABEL } from '~/data/site';
 
@@ -64,7 +64,7 @@ const schema = [
         <a href="/over-mart" class="btn btn--ghost">Meer over mij</a>
       </div>
       <div class="intro__img">
-        <Image src={intro} alt="Camping Val de Cantobre in de Cevennen" widths={[500, 800, 1100].filter((w) => w <= intro.width)} sizes="(min-width: 900px) 560px, 100vw" format="webp" quality={76} loading="lazy" />
+        <Image src={intro} alt="Camping Val de Cantobre in de Cevennen" {...coverImg(intro, 4 / 3.4, 560)} format="webp" quality={76} loading="lazy" />
       </div>
     </div>
   </section>
@@ -97,7 +97,7 @@ const schema = [
             const img = photo(r.data.cover);
             return (
               <a href={`/fotoreportages/${r.id}`} class="reps__item">
-                <Image src={img} alt={r.data.coverAlt} widths={[600, 900, 1300, 1800].filter((w) => w <= img.width)} sizes={`(min-width: 1080px) ${Math.round(Math.max(1, (380 * 4) / 3 * (img.width / img.height)))}px, 90vw`} format="webp" quality={75} loading="lazy" />
+                <Image src={img} alt={r.data.coverAlt} {...coverImg(img, 3 / 4, 300, 80)} format="webp" quality={75} loading="lazy" />
                 <span><strong>{r.data.title}</strong><small>{r.data.photos.length} foto's · {r.data.location}</small></span>
               </a>
             );

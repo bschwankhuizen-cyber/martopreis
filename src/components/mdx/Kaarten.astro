@@ -1,7 +1,7 @@
 ---
 /** Grid van linkkaarten naar (interne) pagina's */
 import { Image } from 'astro:assets';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 type K = { href: string; titel: string; tekst?: string; foto?: string; label?: string };
 interface Props { items: K[] }
 const { items } = Astro.props;
@@ -11,7 +11,7 @@ const { items } = Astro.props;
   {
     items.map((k) => (
       <a class="kk__card" href={k.href} {...(/^https?:/.test(k.href) ? { target: '_blank', rel: 'sponsored nofollow noopener' } : {})}>
-        {k.foto && <Image src={photo(k.foto)} alt="" widths={[400, 700].filter((w) => w <= photo(k.foto!).width)} sizes="(min-width: 1080px) 340px, 100vw" format="webp" quality={72} loading="lazy" />}
+        {k.foto && <Image src={photo(k.foto)} alt="" {...coverImg(photo(k.foto!), 16 / 10, 340)} format="webp" quality={72} loading="lazy" />}
         <span class="kk__b">
           {k.label && <span class="eyebrow">{k.label}</span>}
           <strong>{k.titel}</strong>

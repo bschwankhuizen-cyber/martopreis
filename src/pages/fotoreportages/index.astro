@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Simple from '~/layouts/Simple.astro';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 const reps = (await getCollection('fotoreportages')).sort((a, b) => +b.data.date - +a.data.date);
 ---
 
@@ -14,7 +14,7 @@ const reps = (await getCollection('fotoreportages')).sort((a, b) => +b.data.date
         const strip = r.data.photos.slice(0, 3).map((p) => photo(p.src));
         return (
           <a href={`/fotoreportages/${r.id}`} class="rep">
-            <div class="rep__cover"><Image src={img} alt={r.data.coverAlt} widths={[500, 800].filter((w) => w <= img.width)} sizes="(min-width: 1080px) 380px, 100vw" format="webp" quality={74} loading="lazy" /></div>
+            <div class="rep__cover"><Image src={img} alt={r.data.coverAlt} {...coverImg(img, 4 / 3, 380)} format="webp" quality={74} loading="lazy" /></div>
             <div class="rep__strip">{strip.map((s) => <Image src={s} alt="" width={160} format="webp" quality={60} loading="lazy" />)}</div>
             <div class="rep__b"><span class="eyebrow">{r.data.location}</span><h2>{r.data.title}</h2><p>{r.data.description}</p><span class="rep__n">{r.data.photos.length} foto's →</span></div>
           </a>

@@ -1,14 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 interface Props { href: string; title: string; text?: string; image: string; imageAlt?: string; label?: string; meta?: string; size?: 'normal' | 'large' }
 const { href, title, text, image, imageAlt = '', label, meta, size = 'normal' } = Astro.props;
 const img = photo(image);
+const ci = coverImg(img, size === 'large' ? 16 / 10 : 3 / 2, size === 'large' ? 700 : 400, size === 'large' ? 100 : 100);
 ---
 
 <a class:list={['card', `card--${size}`]} href={href}>
   <div class="card__img">
-    <Image src={img} alt={imageAlt} widths={[400, 700, 1000].filter((w) => w <= img.width)} sizes={size === 'large' ? '(min-width: 1080px) 600px, 100vw' : '(min-width: 1080px) 380px, 100vw'} format="webp" quality={72} loading="lazy" />
+    <Image src={img} alt={imageAlt} widths={ci.widths} sizes={ci.sizes} format="webp" quality={72} loading="lazy" />
     {label && <span class="card__label">{label}</span>}
   </div>
   <div class="card__b">

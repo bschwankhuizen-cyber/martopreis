@@ -1,6 +1,6 @@
 ---
 import { Image, getImage } from 'astro:assets';
-import { photo } from '~/lib/photos';
+import { photo, coverImg } from '~/lib/photos';
 type F = { src: string; caption?: string; alt?: string };
 interface Props {
   fotos: F[];
@@ -26,7 +26,7 @@ const items = await Promise.all(
       items.map((f) => (
         <li>
           <a href={f.full} data-lightbox data-caption={f.caption ?? ''}>
-            <Image src={f.img} alt={f.alt} widths={[400, 700, 1000].filter((w) => w <= f.img.width)} sizes={`(min-width: 1080px) ${Math.round(1040 / cols)}px, ${cols > 2 ? 50 : 100}vw`} format="webp" quality={75} loading="lazy" />
+            <Image src={f.img} alt={f.alt} {...coverImg(f.img, 3 / 2, Math.round(1040 / cols), cols > 2 ? 50 : 100)} format="webp" quality={75} loading="lazy" />
           </a>
           {f.caption && <span class="gal__cap">{f.caption}</span>}
         </li>
