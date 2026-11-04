@@ -97,7 +97,7 @@ const schema = [
             const img = photo(r.data.cover);
             return (
               <a href={`/fotoreportages/${r.id}`} class="reps__item">
-                <Image src={img} alt={r.data.coverAlt} widths={[400, 700].filter((w) => w <= img.width)} sizes="320px" format="webp" quality={72} loading="lazy" />
+                <Image src={img} alt={r.data.coverAlt} widths={[600, 900, 1300, 1800].filter((w) => w <= img.width)} sizes={`(min-width: 1080px) ${Math.round(Math.max(1, (380 * 4) / 3 * (img.width / img.height)))}px, 90vw`} format="webp" quality={75} loading="lazy" />
                 <span><strong>{r.data.title}</strong><small>{r.data.photos.length} foto's · {r.data.location}</small></span>
               </a>
             );
