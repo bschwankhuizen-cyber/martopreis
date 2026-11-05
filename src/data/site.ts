@@ -14,6 +14,8 @@ export const SITE = {
       'Mart is een Nederlandse reiziger die met het gezin door Europa trekt en alles zelf bezoekt, fotografeert en beschrijft.',
   },
   defaultImage: 'plein-en-kerkje-monpazier-ef.jpg',
+  /** Google Analytics 4 – metings-ID (stream martopreis.nl) */
+  ga4: 'G-GJWHS2NYPX',
 };
 
 export type Region = {

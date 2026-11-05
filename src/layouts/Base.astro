@@ -4,6 +4,7 @@ import Seo from '~/components/Seo.astro';
 import Header from '~/components/Header.astro';
 import Footer from '~/components/Footer.astro';
 import Lightbox from "~/components/Lightbox.astro";
+import Analytics from "~/components/Analytics.astro";
 import { SITE } from '~/data/site';
 
 type SeoProps = import('~/components/Seo.astro').Props;
@@ -28,6 +29,7 @@ const { headerOverlay = false, ...seo } = Astro.props;
     <link rel="sitemap" href="/sitemap.xml" />
     <Seo {...seo} />
     <slot name="head" />
+    <Analytics />
   </head>
   <body>
     <a class="skip" href="#main">Naar de inhoud</a>

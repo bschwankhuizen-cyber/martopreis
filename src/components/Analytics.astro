@@ -1,0 +1,74 @@
+---
+/**
+ * Google Analytics 4 met Consent Mode v2.
+ * Standaard staat alles op "denied": GA4 stuurt dan alleen cookieloze, geanonimiseerde pings.
+ * Pas na "Accepteren" in de cookiemelding worden analytische cookies geplaatst.
+ */
+import { SITE } from '~/data/site';
+const id = SITE.ga4;
+---
+
+{id && (
+  <>
+    <script is:inline define:vars={{ id }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+      var c = null;
+      try { c = localStorage.getItem('mor-consent'); } catch (e) {}
+      gtag('consent', 'default', {
+        ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied',
+        analytics_storage: c === 'granted' ? 'granted' : 'denied',
+        wait_for_update: 500,
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('js', new Date());
+      gtag('config', id, { anonymize_ip: true });
+      // Uitgaande (affiliate)klikken als event meten
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="http"]');
+        if (!a || a.host === location.host) return;
+        gtag('event', a.rel.indexOf('sponsored') > -1 ? 'affiliate_click' : 'outbound_click', {
+          link_url: a.href, link_domain: a.hostname, link_text: (a.textContent || '').trim().slice(0, 80),
+        });
+      });
+    </script>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${id}`}></script>
+
+    <div class="cc" role="dialog" aria-live="polite" aria-label="Cookietoestemming" hidden>
+      <p>Mag ik met analytische cookies (Google Analytics) meten hoe de site wordt gebruikt? Zo kan ik hem beter maken. <a href="/privacy">Meer info</a></p>
+      <div class="cc__b">
+        <button type="button" class="btn btn--ghost" data-c="denied">Weigeren</button>
+        <button type="button" class="btn btn--sun" data-c="granted">Accepteren</button>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        var box = document.querySelector('.cc');
+        var c = null;
+        try { c = localStorage.getItem('mor-consent'); } catch (e) {}
+        if (!c) box.hidden = false;
+        box.addEventListener('click', function (e) {
+          var v = e.target.getAttribute && e.target.getAttribute('data-c');
+          if (!v) return;
+          try { localStorage.setItem('mor-consent', v); } catch (err) {}
+          window.gtag('consent', 'update', { analytics_storage: v });
+          box.hidden = true;
+        });
+        // Link "cookie-instellingen" in de footer opent de melding opnieuw
+        document.addEventListener('click', function (e) {
+          if (e.target.closest && e.target.closest('[data-cookie-settings]')) { e.preventDefault(); box.hidden = false; }
+        });
+      })();
+    </script>
+  </>
+)}
+
+<style>
+  .cc { position: fixed; z-index: 90; left: 16px; right: 16px; bottom: 16px; max-width: 560px; margin-inline: auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: 0 10px 40px rgb(0 0 0 / 0.18); padding: 18px 20px; font-size: 0.95rem; }
+  .cc[hidden] { display: none; }
+  .cc p { margin: 0 0 12px; }
+  .cc__b { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  .cc .btn { padding: 0.6em 1.1em; }
+</style>
